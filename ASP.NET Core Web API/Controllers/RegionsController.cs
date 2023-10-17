@@ -49,34 +49,31 @@ namespace ASP.NET_Core_Web_API.Controllers
             {
                 return BadRequest();
             }
-            var regionDto = new RegionDTO
-            {
-                Id = regionDomain.Id,
-                Name = regionDomain.Name,
-                Code = regionDomain.Code,
-                RegionImageUrl = regionDomain.RegionImageUrl,
-            };
-            return Ok(regionDto);
+            //var regionDto = new RegionDTO
+            //{
+            //    Id = regionDomain.Id,
+            //    Name = regionDomain.Name,
+            //    Code = regionDomain.Code,
+            //    RegionImageUrl = regionDomain.RegionImageUrl,
+            //};
+            return Ok(_mapper.Map<RegionDTO>(regionDomain));
         }
         [HttpPost]
         public async Task<IActionResult> CreateRegion([FromBody] AddRegionRequestDTO addRegionRequestDTO)
         {
-            var regionDomain = new Region
+            if(ModelState.IsValid)
             {
-                Code = addRegionRequestDTO.Code,
-                Name = addRegionRequestDTO.Name,
-                RegionImageUrl = addRegionRequestDTO.RegionImageUrl,
-            };
+                var regionDomain = _mapper.Map<Region>(addRegionRequestDTO);
 
-           regionDomain = await  _regionRepo.CreateAsync(regionDomain);
-            var regionDto = new RegionDTO
+                regionDomain = await _regionRepo.CreateAsync(regionDomain);
+                var regionDto = _mapper.Map<RegionDTO>(regionDomain);
+                return CreatedAtAction(nameof(GetRegion), new { id = regionDto.Id }, regionDto);
+            }
+            else
             {
-                Id = regionDomain.Id,
-                Name = regionDomain.Name,
-                Code = regionDomain.Code,
-                RegionImageUrl = regionDomain.RegionImageUrl,
-            };
-            return CreatedAtAction(nameof(GetRegion), new {id = regionDto.Id}, regionDto);
+                return BadRequest(ModelState);
+            }
+       
         }
 
 
@@ -84,31 +81,23 @@ namespace ASP.NET_Core_Web_API.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateRegionRequestDTO updateRegionRequestDTO)
         {
-            var regionDomainModel = new Region()
+            if(ModelState.IsValid)
             {
-                RegionImageUrl = updateRegionRequestDTO.RegionImageUrl,
-                Name = updateRegionRequestDTO.Name,
-                Code = updateRegionRequestDTO.Code,
+                var regionDomainModel = _mapper.Map<Region>(updateRegionRequestDTO);
 
-            };
-             regionDomainModel =await _regionRepo.UpdateAsync(id, regionDomainModel);
-            if(regionDomainModel == null)
-            {
-                return NotFound();
+                regionDomainModel = await _regionRepo.UpdateAsync(id, regionDomainModel);
+                if (regionDomainModel == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(_mapper.Map<RegionDTO>(regionDomainModel));
             }
-         
-
-            // convert domain Model to DTO
-
-            var regionDto = new RegionDTO()
+            else
             {
-                Id = regionDomainModel.Id,
-                Name = regionDomainModel.Name,
-                Code = regionDomainModel.Code,
-                RegionImageUrl = regionDomainModel.RegionImageUrl,
-            };
-
-            return Ok(regionDto);    
+                return BadRequest(ModelState);
+            }
+           
         }
 
         [HttpDelete]
@@ -120,16 +109,8 @@ namespace ASP.NET_Core_Web_API.Controllers
             {
                 return NotFound();
             }
-           
 
-            var regionDto = new RegionDTO()
-            {
-                Id = regionDomainModel.Id,
-                Name = regionDomainModel.Name,
-                Code = regionDomainModel.Code,
-                RegionImageUrl = regionDomainModel.RegionImageUrl,
-            };
-            return Ok(regionDto);
+            return Ok(_mapper.Map<RegionDTO>(regionDomainModel));
         }
     }
 }
