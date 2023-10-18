@@ -35,7 +35,7 @@ namespace ASP.NET_Core_Web_API.Controllers
           
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromRoute] string? filterOn, [FromRoute] string? filterQuery)
         {
             var walk = await _walkRepository.GetAllAsync();
             return Ok(_mapper.Map<IEnumerable<WalkDTO>>(walk));
