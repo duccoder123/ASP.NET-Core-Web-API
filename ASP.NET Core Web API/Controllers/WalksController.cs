@@ -34,10 +34,14 @@ namespace ASP.NET_Core_Web_API.Controllers
             }
           
         }
+
+        // GET : /api/walks?filterOn=Name&filterQuery=Track&sortBy=Name&isAscending=true&pageNumber=16&pageSize=5
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromRoute] string? filterOn, [FromRoute] string? filterQuery)
+        public async Task<IActionResult> GetAll([FromRoute] string? filterOn, [FromRoute] string? filterQuery,
+            [FromRoute] string? sortBy, [FromRoute] bool? isAscending,
+            [FromRoute] int pageNumber = 1, [FromQuery] int pageSize = 1000)
         {
-            var walk = await _walkRepository.GetAllAsync();
+            var walk = await _walkRepository.GetAllAsync(filterOn, filterQuery, sortBy, isAscending ?? true, pageNumber,pageSize);
             return Ok(_mapper.Map<IEnumerable<WalkDTO>>(walk));
         }
 

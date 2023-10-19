@@ -31,7 +31,8 @@ namespace ASP.NET_Core_Web_API.Repositories
             return existingItem;
         }
 
-        public async Task<IEnumerable<Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null)
+        public async Task<IEnumerable<Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null,
+            string? sortBy =null, bool isAscending = true, int pageNumber=1, int pageSize = 1000)
         {
             var walks = _db.Walks.Include("Difficulty").Include("Region").AsQueryable();
             //Filtering
@@ -41,10 +42,27 @@ namespace ASP.NET_Core_Web_API.Repositories
                 {
                     walks = walks.Where(x => x.Name.Contains(filterQuery));
                 }
+               
             }
+            // Sortig
+            if(string.IsNullOrWhiteSpace(sortBy) == false)
+            {
+                if(sortBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = isAscending ? walks.OrderBy(x => x.Name) : walks.OrderByDescending(x => x.Name);
+                }
+                else if (sortBy.Equals("LengthByKm", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = isAscending ? walks.OrderBy(x => x.LengthInKm) : walks.OrderByDescending(x => x.LengthInKm);
+                }
+            }
+            // Pagination
+            var skipResults = (pageNumber - 1) * pageSize;
 
-            return await walks.ToListAsync();
-            //return await _db.Walks.Include("Difficulty").Include("Region").ToListAsync();
+
+
+            // skip để bỏ qua một vài phần tử cụ thể 
+            return await walks.Skip(skipResults).Take(pageSize).ToListAsync();
         }
 
         public async Task<Walk> GetWalkByIdAsync(Guid id)
