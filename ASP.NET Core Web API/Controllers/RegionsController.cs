@@ -3,6 +3,7 @@ using ASP.NET_Core_Web_API.Models.Domain;
 using ASP.NET_Core_Web_API.Models.DTO;
 using ASP.NET_Core_Web_API.Repositories;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ namespace ASP.NET_Core_Web_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RegionsController : Controller
     {
         private readonly ApplicationDbContext _db;
