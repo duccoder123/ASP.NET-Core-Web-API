@@ -1,4 +1,5 @@
 ﻿using ASP.NET_Core_Web_API.Models.DTO;
+using ASP.NET_Core_Web_API.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +21,11 @@ namespace ASP.NET_Core_Web_API.Controllers
         // RemoveRoleAsync(IdentityUser user, IdentityRole role) : xóa một vai trò cho người dùng
         // IsInRoleAsync(IdentityUser user, IdentityRole role): ktra user có thuộc vai trò nào đó hay ko
         private readonly UserManager<IdentityUser> _userManager;
-        public AuthController(UserManager<IdentityUser> userManager)
+        private readonly ITokenRepository _tokenRepository;
+        public AuthController(UserManager<IdentityUser> userManager, ITokenRepository tokenRepository)
         {
             _userManager = userManager;
+            _tokenRepository = tokenRepository;
         }
         [HttpPost]
         [Route("Register")]

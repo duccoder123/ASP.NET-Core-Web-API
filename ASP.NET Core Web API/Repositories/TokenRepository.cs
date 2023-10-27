@@ -32,13 +32,16 @@ namespace ASP.NET_Core_Web_API.Repositories
             // (key, algorithm) : 2 đối số
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            // JwtSecurtiyToken được sử dụng để tạo và giải mã JWT, là phương pháp xác thực và trao đổi thông tin an toàn
+            // hiệu quả
             var token = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
-                claims,
-                expires: DateTime.Now.AddMinutes(15),
+                claims, // thông tin về users
+                expires: DateTime.Now.AddMinutes(15), // tgian hết hạn của jwt
                 signingCredentials: credentials
                 );
+            return new JwtSecurityTokenHandler().WriteToken(token); // giải mã 
         }
     }
 }
