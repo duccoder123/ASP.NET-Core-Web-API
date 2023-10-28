@@ -62,7 +62,19 @@ namespace ASP.NET_Core_Web_API.Controllers
                var checkPassword = await _userManager.CheckPasswordAsync(user, loginRequestDto.Password);
                 if(checkPassword)
                 {
-                    
+                    // get roles for this user
+                var roles =    await _userManager.GetRolesAsync(user);
+                    if(roles != null)
+                    {
+                        //create token
+                        var jwtToken = _tokenRepository.CreateJWTToken(user, roles.ToList());
+                        var response = new LoginResponseDTO
+                        {
+                            JwtToken = jwtToken,
+                        };
+                        return Ok(response);
+                    }
+                   
                 }
 
             }
